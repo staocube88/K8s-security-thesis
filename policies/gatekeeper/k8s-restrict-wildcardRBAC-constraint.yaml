@@ -1,0 +1,11 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRestrictWildcardRBAC
+metadata:
+  name: restrict-wildcard-rbac
+spec:
+  enforcementAction: deny
+  match:
+    namespaceSelector:
+      matchLabels:
+        security-level: hardened
+

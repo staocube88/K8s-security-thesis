@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: signed-test
+  namespace: hardened
+spec:
+  serviceAccountName: custom-sa
+  containers:
+  - name: k8-web-app
+    image: staocube/k8-web-app:2.0
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+

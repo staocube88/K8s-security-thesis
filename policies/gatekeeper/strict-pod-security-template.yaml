@@ -1,0 +1,62 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8sstrictpodsecurity
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sStrictPodSecurity
+  targets:
+  - target: admission.k8s.gatekeeper.sh
+    rego: |
+      package k8sstrictpodsecurity
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        container := input.review.object.spec.containers[i]
+        container.securityContext.privileged == true
+        msg := "Privileged containers are not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        container := input.review.object.spec.containers[i]
+        container.securityContext.runAsUser == 0
+        msg := "Running as root is not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        input.review.object.spec.hostNetwork == true
+        msg := "Host network is not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        input.review.object.spec.hostPID == true
+        msg := "Host PID namespace is not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        volume := input.review.object.spec.volumes[j]
+        volume.hostPath
+        msg := "HostPath volumes are not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        container := input.review.object.spec.containers[i]
+        endswith(container.image, ":latest")
+        msg := "Latest tag not allowed"
+      }
+
+      violation[{"msg": msg}] {
+        input.review.kind.kind == "Pod"
+        container := input.review.object.spec.containers[i]
+        not startswith(container.image, "registry.local/")
+        not startswith(container.image, "staocube/")
+        msg := "Image must come from trusted registry"
+      }
+

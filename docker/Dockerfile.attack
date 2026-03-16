@@ -1,0 +1,23 @@
+FROM alpine
+
+RUN apk add --no-cache bash curl
+
+# Use backslashes to tell Docker this is all one CMD instruction
+CMD sh -c '\
+echo "Container started"; \
+sleep 10; \
+echo "[Attack 1] Interactive shell spawn"; \
+sh -c "echo shell started"; \
+sleep 5; \
+echo "[Attack 2] Sensitive file access"; \
+cat /etc/shadow || true; \
+sleep 5; \
+echo "[Attack 3] Privilege escalation attempt"; \
+chmod +s /bin/sh || true; \
+sleep 5; \
+echo "[Attack 4] Root filesystem modification"; \
+touch /root/hacked || true; \
+sleep 5; \
+echo "[Attack 5] Network exfiltration"; \
+curl http://example.com || true; \
+sleep 300'

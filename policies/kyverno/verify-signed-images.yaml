@@ -1,0 +1,28 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-signed-images
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: verify-cosign-signature
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+          namespaces:
+          - hardened
+    verifyImages:
+    - imageReferences:
+      - "staocube/*"
+      attestors:
+      - entries:
+        - keys:
+            publicKeys: |
+              -----BEGIN PUBLIC KEY-----
+              MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEn0bQDDdss9oSgSBE15FYPt70Z6kP
+              Kmf7j1hi2d1RrpTTM1hXAVlKNHZ0V7TLlaFf9wkX5Zoi0HasXYEWLIYUSw==
+              -----END PUBLIC KEY-----
+
