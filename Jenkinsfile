@@ -6,7 +6,7 @@ pipeline {
 
         stage('Checkout Project') {
             steps {
-                git 'https://github.com/staocube88/k8s-security-thesis.git'
+                git 'https://github.com/staocube88/K8s-security-thesis.git'
             }
         }
 
